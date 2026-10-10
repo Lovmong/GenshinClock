@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>原神 调整时间星盘</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .clock-wrap {
+      width: 700px;
+      height: 700px;
+      position: relative;
+      overflow: hidden;
+      border: #fff 1px solid;
+    }
+
+    .clock-wrap img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      user-select: none;
+      pointer-events: none;
+      border: #fff 1px solid;
+
+    }
+
+    /* 齿轮 */
+    /* .gear {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      height: 100%;
+      transform-origin: center center;
+    } */
+
+    .gear1 {
+      position: absolute;
+      display: none;
+      width: 100%;
+      height: 100%;
+      z-index: -99;
+      animation: rotateGear1 60s linear infinite;
+    }
+
+    .gear2 {
+      display: none;
+      animation: rotateGear2 80s linear infinite reverse;
+    }
+
+    .clock-pan {
+      z-index: 1;
+    }
+
+    /*
+    @keyframes rotateGear1 {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    @keyframes rotateGear2 {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+    */
+
+    /* 指针核心：旋转原点在底部中心 */
+    .pointer {
+      display: none;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      height: 100%;
+      transform-origin: center bottom;
+      /* pointer-events: auto; */
+    }
+
+    #pointerMin {
+      z-index: 10;
+    }
+
+    #pointerHour {
+      z-index: 9;
+    }
+
+    /* 昼夜遮罩 */
+    /*
+    .mask-layer {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      border-radius: 50%;
+      background: conic-gradient(transparent var(--maskDeg), rgba(0, 0, 0, 0.75) var(--maskDeg));
+      pointer-events: none;
+    }
+    */
+  </style>
+</head>
+
+<body>
+  <div class="clock-wrap">
+    <!-- 昼夜遮罩 -->
+    <div class="mask-layer" id="mask" style="--maskDeg: 180deg;"></div>
+    <!-- 齿轮 -->
+    <img class="gear gear1" src="./assets/UI_Img_Horoscope03.png" alt="gear1">
+    <img class="gear gear2" src="./assets/UI_Img_Horoscope04.png" alt="gear2">
+    <!-- 表盘底图 -->
+    <img class="clock-pan" src="./assets/Clock_BG.png" alt="clock-bg">
+    <!-- 指针 -->
+    <img id="pointerHour" class="pointer" src="./assets/UI_Clock_HourHand.png" alt="hour">
+    <img id="pointerMin" class="pointer" src="./assets/UI_Clock_MinuteHand.png" alt="minute">
+  </div>
+
+  <!--
+  <script>
+    const hourHand = document.getElementById('pointerHour');
+    const minHand = document.getElementById('pointerMin');
+    const mask = document.getElementById('mask');
+    const wrap = document.querySelector('.clock-wrap');
+
+    let isDrag = false;
+    let activePointer = null;
+    let currentHourDeg = 0;
+    let currentMinDeg = 0;
+
+    // 角度转提瓦特时间
+    function deg2Time(deg) {
+      let totalMin = deg / 360 * 24 * 60;
+      let h = Math.floor(totalMin / 60) % 24;
+      let m = Math.floor(totalMin % 60);
+      return { h, m };
+    }
+    // 时间转遮罩角度（黑夜区域）
+    function updateMask(deg) {
+      mask.style.setProperty('--maskDeg', `${deg}deg`);
+    }
+    // 设置指针旋转
+    function render() {
+      hourHand.style.transform = `rotate(${currentHourDeg}deg)`;
+      minHand.style.transform = `rotate(${currentMinDeg}deg)`;
+      updateMask(currentMinDeg);
+    }
+
+    // 鼠标坐标 -> 相对于圆心的角度
+    function getAngle(e) {
+      const rect = wrap.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      // atan2返回弧度，转为角度，+90校正0°朝上
+      let ang = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+      if (ang < 0) ang += 360;
+      return ang;
+    }
+
+    // 拖拽事件
+    minHand.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      isDrag = true;
+      activePointer = 'min';
+    });
+    hourHand.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      isDrag = true;
+      activePointer = 'hour';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDrag) return;
+      const ang = getAngle(e);
+      if (activePointer === 'min') {
+        currentMinDeg = ang;
+      } else {
+        currentHourDeg = ang;
+      }
+      render();
+    });
+    document.addEventListener('mouseup', () => { isDrag = false; });
+    document.addEventListener('mouseleave', () => { isDrag = false; });
+
+    // 初始化，提瓦特时间
+    function initTeyvatTime() {
+      const now = Date.now();
+      const teyvatTotalMin = (now / 1000 * 12) % (24 * 60);
+      const totalDeg = teyvatTotalMin / (24 * 60) * 360;
+      currentHourDeg = totalDeg;
+      currentMinDeg = totalDeg;
+      render();
+    }
+    initTeyvatTime();
+    setInterval(() => {
+      if (!isDrag) initTeyvatTime();
+    }, 1000);
+  </script>
+
+  -->
+</body>
+
+</html>
+<!-- （注：内容由AI生成） -->
