@@ -4,140 +4,40 @@
 <head>
   <meta charset="UTF-8">
   <title>原神 调整时间星盘</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box
-    }
-
-    body {
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    .clock-wrap {
-      width: 700px;
-      height: 700px;
-      position: relative;
-      overflow: hidden;
-      border: #fff 1px solid;
-    }
-
-    .clock-wrap img {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 100%;
-      height: 100%;
-      user-select: none;
-      pointer-events: none;
-      border: #fff 1px solid;
-
-    }
-
-    /* 齿轮 */
-    /* .gear {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 100%;
-      height: 100%;
-      transform-origin: center center;
-    } */
-
-    .gear1 {
-      position: absolute;
-      display: none;
-      width: 100%;
-      height: 100%;
-      z-index: -99;
-      animation: rotateGear1 60s linear infinite;
-    }
-
-    .gear2 {
-      display: none;
-      animation: rotateGear2 80s linear infinite reverse;
-    }
-
-    .clock-pan {
-      z-index: 1;
-    }
-
-    /*
-    @keyframes rotateGear1 {
-      from {
-        transform: translate(-50%, -50%) rotate(0deg);
-      }
-
-      to {
-        transform: translate(-50%, -50%) rotate(360deg);
-      }
-    }
-
-    @keyframes rotateGear2 {
-      from {
-        transform: translate(-50%, -50%) rotate(0deg);
-      }
-
-      to {
-        transform: translate(-50%, -50%) rotate(360deg);
-      }
-    }
-    */
-
-    /* 指针核心：旋转原点在底部中心 */
-    .pointer {
-      display: none;
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 100%;
-      height: 100%;
-      transform-origin: center bottom;
-      /* pointer-events: auto; */
-    }
-
-    #pointerMin {
-      z-index: 10;
-    }
-
-    #pointerHour {
-      z-index: 9;
-    }
-
-    /* 昼夜遮罩 */
-    /*
-    .mask-layer {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      left: 0;
-      top: 0;
-      border-radius: 50%;
-      background: conic-gradient(transparent var(--maskDeg), rgba(0, 0, 0, 0.75) var(--maskDeg));
-      pointer-events: none;
-    }
-    */
-  </style>
+  <link rel="stylesheet" href="./index.css">
 </head>
 
 <body>
   <div class="clock-wrap">
     <!-- 昼夜遮罩 -->
-    <div class="mask-layer" id="mask" style="--maskDeg: 180deg;"></div>
-    <!-- 齿轮 -->
-    <img class="gear gear1" src="./assets/UI_Img_Horoscope03.png" alt="gear1">
-    <img class="gear gear2" src="./assets/UI_Img_Horoscope04.png" alt="gear2">
-    <!-- 表盘底图 -->
-    <img class="clock-pan" src="./assets/Clock_BG.png" alt="clock-bg">
+    <!-- <div class="mask-layer" id="mask" style="--maskDeg: 180deg;"></div> -->
+
+    <img class="ref_clock" src="./assets/MainClock.png" alt="clock-bg">
+
+    <!-- 表盘 -->
+    <img class="clock-bg" src="./assets/Clock_BG.png" alt="clock-bg">
+    <img class="clock-dial" src="./assets/UI_Clock_Dial.png" alt="clock-bg">
+
+    <!-- 表机芯-->
+    <div class="clock-movement">
+      <!-- 星空-->
+      <!-- <img class="star" src="./assets/UI_Img_HoroscopeBg.png" alt="star"> -->
+      <!-- <img class="star_particles" src="./assets/star_particles.gif" alt="star_particles"> -->
+    
+      <!-- 齿轮 -->
+      <!-- <img class="gear3" src="./assets/UI_Img_Horoscope03.png" alt="gear3"> -->
+      <!-- <img class="gear4" src="./assets/UI_Img_Horoscope04.png" alt="gear4"> -->
+      <img class="gear5" src="./assets/UI_Img_Horoscope05.png" alt="gear5">
+      <img class="gear6" src="./assets/UI_Img_Horoscope06.png" alt="gear6">
+      <img class="gear7" src="./assets/UI_Img_Horoscope06.png" alt="gear7">
+      <!-- <img class="gear0" src="./assets/UI_Img_Horoscope06.png" alt="gear0"> -->
+
+    </div>
+
+
     <!-- 指针 -->
-    <img id="pointerHour" class="pointer" src="./assets/UI_Clock_HourHand.png" alt="hour">
-    <img id="pointerMin" class="pointer" src="./assets/UI_Clock_MinuteHand.png" alt="minute">
+    <!-- <img id="pointerHour" class="pointer" src="./assets/UI_Clock_HourHand.png" alt="hour"> -->
+    <!-- <img id="pointerMin" class="pointer" src="./assets/UI_Clock_MinuteHand.png" alt="minute"> -->
   </div>
 
   <!--
@@ -227,4 +127,3 @@
 </body>
 
 </html>
-<!-- （注：内容由AI生成） -->
