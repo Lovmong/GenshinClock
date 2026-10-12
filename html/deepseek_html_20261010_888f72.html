@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>原神 调整时间星盘</title>
+  <link rel="stylesheet" href="./deepseek_css_20261010_75bd0d.css">
+</head>
+
+<body>
+  <div class="clock-container">
+    <div class="clock-header" id="btnClose">返回</div>
+
+    <div class="clock-container_wrapper">
+      <div class="clock-con_left"></div>
+      <div class="clock-con_right" id="clockRight">
+
+        <!-- 底层表盘 -->
+        <label class="clock_unit clock_bg"></label>
+
+        <!-- 星空齿轮遮罩区 -->
+        <div class="clock_unit_mask">
+          <div class="clock_unit_mask_wrapper">
+            <label class="clock_unit_mask_wrapper clock_hbg"></label>
+            <label class="clock_unit_mask_wrapper clock_horoscope03" id="horoscope03"></label>
+            <label class="center center_90 clock_horoscope04" id="horoscope04"></label>
+
+            <div class="center center_35">
+              <label class="center-clock clock_horoscope05_1" id="horoscope051"></label>
+            </div>
+            <div class="center center_50">
+              <label class="center-clock clock_horoscope05" id="horoscope05"></label>
+            </div>
+            <div class="center">
+              <label class="center-clock clock_horoscope06"></label>
+            </div>
+            <div class="center">
+              <label class="center-clock clock_horoscope06 clock_horoscope06_1" id="horoscope061"></label>
+            </div>
+
+            <!-- 昼夜遮罩层 -->
+            <label class="timeZone_wrapper clock_TimeZone"></label>
+            <label class="timeZone_wrapper clock_TimeZone clock_TimeZone_1"></label>
+          </div>
+        </div>
+
+        <!-- 表盘刻度 -->
+        <label class="clock_unit clock_dial"></label>
+        <label class="clock_unit star_particles"></label>
+
+        <!-- 昼夜图标 -->
+        <label class="noon_state noon" id="noonIcon"></label>
+        <label class="sun_state dusk" id="duskIcon"></label>
+        <label class="sun_state morning" id="morningIcon"></label>
+        <label class="noon_state night" id="nightIcon"></label>
+
+        <!-- 分针 -->
+        <label class="clock_unit clock_minuteHand" id="minuteHand"></label>
+
+        <!-- 时针（可拖拽） -->
+        <label class="clock_unit clock_hourHand" id="hourHand"></label>
+
+        <!-- 确定按钮 -->
+        <div class="clock-btn" id="btnConfirm">确定</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ============================================================
+     *  工具函数
+     * ============================================================ */
+    function getCurrentTimeAngles(date = new Date()) {
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      const hoursAngle = hours * 15; // 0 度为 12 点
+      const minutesAngle = minutes * 6;
+      const endHoursAngle = hoursAngle < 180 ? 180 + hoursAngle : hoursAngle - 180;
+      return { hoursAngle: endHoursAngle, minutesAngle };
+    }
+
+    function getInitSection(angle) {
+      let section = 0;
+      if (angle >= 0 && angle < 90) section = 1;
+      else if (angle >= 90 && angle < 180) section = 2;
+      else if (angle >= 180 && angle < 270) section = 3;
+      else if (angle >= 270 && angle < 360) section = 4;
+      let pre = 0, next = 0;
+      switch (section) {
+        case 1: pre = 4; next = 2; break;
+        case 2: pre = 1; next = 3; break;
+        case 3: pre = 2; next = 4; break;
+        case 4: pre = 3; next = 1; break;
+      }
+      return { section, pre, next };
+    }
+
+    function getOneRotation(step, initAngle, angle, section) {
+      if (step > 3) return true;
+      if (step === 3) {
+        if (section === 1) {
+          return angle > initAngle && angle >= 0 && angle < 90;
+        }
+        if (section === 2 || section === 3) {
+          return angle > initAngle;
+        }
+        if (section === 4) {
+          return (angle > initAngle && angle >= 270 && angle < 360) ||
+                 (angle >= 0 && angle < 135);
+        }
+      }
+      return false;
+    }
+
+    /* ============================================================
+     *  初始化状态
+     * ============================================================ */
+    const currentAngle = getCurrentTimeAngles();
+    const initSection = getInitSection(currentAngle.hoursAngle);
+    const time = currentAngle.hoursAngle;
+
+    document.documentElement.style.setProperty('--start-angle', `${currentAngle.hoursAngle}deg`);
+    document.documentElement.style.setProperty('--mask-angle', `0deg`);
+    document.documentElement.style.setProperty('--mask-angle1', `0deg`);
+
+    const toothedGearRotationSpeed = 8;   // 齿轮加速倍率
+
+    let rotation = currentAngle.hoursAngle;         // 时针角度
+    let minutesAngle = currentAngle.hoursAngle;     // 分针角度
+    let startX = 0, startY = 0;
+    let initRotation = 0;
+    let endRotation = 0;
+    let maskAngle = -1;
+    let initStartAngle = currentAngle.hoursAngle;
+    let initMaskAngle = 0;
+    let rotating = false;
+    let isChange = false;
+
+    let movePosArr = [];
+    let curPos = null;
+    let step = 0;
+    let areaSection = initSection.section;
+    let isClock = true;
+    let isRotationAngle = false;
+
+    /* ============================================================
+     *  DOM
+     * ============================================================ */
+    const hourHand       = document.getElementById('hourHand');
+    const minuteHand     = document.getElementById('minuteHand');
+    const btnConfirm     = document.getElementById('btnConfirm');
+    const btnClose       = document.getElementById('btnClose');
+    const noonIcon       = document.getElementById('noonIcon');
+    const duskIcon       = document.getElementById('duskIcon');
+    const morningIcon    = document.getElementById('morningIcon');
+    const nightIcon      = document.getElementById('nightIcon');
+
+    /* ============================================================
+     *  GSAP 齿轮旋转
+     *  简化：用 requestAnimationFrame 手动累加角度
+     * ============================================================ */
+    const gears = [
+      { el: document.getElementById('horoscope03'), speed: -360 / 40, angle: 0 },  // 40s 一圈
+      { el: document.getElementById('horoscope04'), speed: -360 / 40, angle: 40 }, // 基础 40deg
+      { el: document.getElementById('horoscope05'), speed:  360 / 20, angle: 0 },
+      { el: document.getElementById('horoscope051'), speed: 360 / 30, angle: 0 },
+      { el: document.getElementById('horoscope061'), speed: -360 / 30, angle: 0 },
+    ];
+    let gearSpeedScale = 1;
+    let lastTime = performance.now();
+
+    function tickGears(now) {
+      const dt = (now - lastTime) / 1000;
+      lastTime = now;
+      gears.forEach(g => {
+        if (!g.el) return;
+        g.angle += g.speed * dt * gearSpeedScale;
+        g.el.style.transform = `rotate(${g.angle}deg)`;
+      });
+      requestAnimationFrame(tickGears);
+    }
+    requestAnimationFrame(tickGears);
+
+    /* ============================================================
+     *  状态更新
+     * ============================================================ */
+    function updateIcons(angle) {
+      // 白昼图标（上/下 270-360 / 0-90）
+      noonIcon.style.display    = ((angle >= 270 && angle <= 360) || (angle >= 0 && angle <= 90)) ? 'block' : 'none';
+      // 黄昏 0-180
+      duskIcon.style.display    = (angle >= 0 && angle <= 180) ? 'block' : 'none';
+      // 黎明 180-360
+      morningIcon.style.display = (angle >= 180 && angle <= 360) ? 'block' : 'none';
+      // 夜晚 90-270
+      nightIcon.style.display   = (angle >= 90 && angle <= 270) ? 'block' : 'none';
+    }
+
+    function updateHands() {
+      hourHand.style.transform   = `rotate(${rotation}deg)`;
+      minuteHand.style.transform = `rotate(${minutesAngle}deg)`;
+    }
+
+    function setMaskVar(name, value) {
+      document.documentElement.style.setProperty(name, value);
+    }
+
+    updateHands();
+    updateIcons(time);
+
+    /* ============================================================
+     *  拖拽旋转
+     * ============================================================ */
+    function startRotate(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      rotating = true;
+      const rect = hourHand.getBoundingClientRect();
+      startX = rect.left + rect.width / 2;
+      startY = rect.top + rect.height / 2;
+      initRotation = rotation;
+    }
+
+    function rotate(event) {
+      if (!rotating) return;
+      const deltaX = event.clientX - startX;
+      const deltaY = event.clientY - startY;
+
+      let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI) + 90;
+      if (angle < 0) angle += 360;
+
+      calculateSector(event, angle);
+
+      // 起点 step < 0 不允许逆时针
+      if (step < 0) return;
+
+      if (initSection.section === 4) {
+        if (step <= 0) {
+          if (angle < time && angle > 180) return;
+        }
+      }
+      if (initSection.section === 1) {
+        if (step <= 0) {
+          if ((angle < time && angle > 0) || (angle > time && angle >= 180)) return;
+        }
+      }
+      if (initSection.section === 2 || initSection.section === 3) {
+        if (step <= 0) {
+          if (angle < time && angle > 0) return;
+        }
+      }
+
+      if (step > 6) return;
+
+      if (step === 6) {
+        if (initSection.section === 4) {
+          if (angle >= 0 && angle < 135) return;
+        }
+        if (initSection.section === 1) {
+          if (angle > 0 && angle < 180 && angle > time) return;
+        }
+        if (initSection.section !== 1) {
+          if (angle > time) return;
+        }
+      }
+
+      rotation = angle;
+      gearSpeedScale = toothedGearRotationSpeed;
+
+      const mask = angle - time > 0 ? angle - time : 360 - time + angle;
+      maskAngle = mask;
+      isRotationAngle = getOneRotation(step, time, angle, initSection.section);
+
+      if (isRotationAngle) {
+        setMaskVar('--mask-angle1', `${mask}deg`);
+        setMaskVar('--mask-angle', `3600deg`);
+      } else {
+        setMaskVar('--mask-angle1', `0deg`);
+        setMaskVar('--mask-angle', `${mask}deg`);
+      }
+
+      updateHands();
+      updateIcons(angle);
+    }
+
+    function stopRotate() {
+      if (!rotating) return;
+      rotating = false;
+
+      initMaskAngle = rotation - initStartAngle > 0
+        ? rotation - initStartAngle
+        : 360 - initStartAngle + rotation;
+
+      endRotation = initMaskAngle + currentAngle.hoursAngle;
+      step = step < 0 ? 0 : step;
+      gearSpeedScale = 1;
+    }
+
+    hourHand.addEventListener('mousedown', startRotate);
+    hourHand.addEventListener('mousemove', rotate);
+    hourHand.addEventListener('mouseleave', stopRotate);
+    hourHand.addEventListener('mouseup', stopRotate);
+
+    /* ============================================================
+     *  扇区 / 步数计算
+     * ============================================================ */
+    function getAreaSection(e, angle) {
+      let prePos = null;
+      if (movePosArr.length > 0) {
+        prePos = movePosArr[movePosArr.length - 1];
+      }
+      curPos = mousePos(e);
+      movePosArr[movePosArr.length] = curPos;
+
+      if (prePos) {
+        if (angle >= 0 && angle < 90) {
+          areaSection = 1;
+          if (prePos.x < curPos.x && prePos.y < curPos.y) isClock = true;
+          else if (prePos.x > curPos.x && prePos.y > curPos.y) isClock = false;
+        } else if (angle >= 90 && angle < 180) {
+          areaSection = 2;
+          if (prePos.x > curPos.x && prePos.y < curPos.y) isClock = true;
+          else if (prePos.x < curPos.x && prePos.y > curPos.y) isClock = false;
+        } else if (angle >= 180 && angle < 270) {
+          areaSection = 3;
+          if (prePos.x > curPos.x && prePos.y > curPos.y) isClock = true;
+          else if (prePos.x < curPos.x && prePos.y < curPos.y) isClock = false;
+        } else if (angle >= 270 && angle < 360) {
+          areaSection = 4;
+          if (prePos.x < curPos.x && prePos.y > curPos.y) isClock = true;
+          else if (prePos.x > curPos.x && prePos.y < curPos.y) isClock = false;
+        }
+      }
+    }
+
+    function calculateSector(e, angle) {
+      const oldSection = areaSection;
+      getAreaSection(e, angle);
+
+      if (areaSection !== oldSection) {
+        if (areaSection - oldSection > 0) step++;
+        else step--;
+
+        if (areaSection === 1 && oldSection === 4) step++;
+        if (areaSection === 4 && oldSection === 1) step--;
+      }
+
+      // 如果在第四扇区，并且即将跨越到第一扇区，清除缓存
+      if (areaSection === 4 && maskAngle > 340) {
+        clearState();
+      }
+    }
+
+    function clearState() {
+      movePosArr = [];
+      curPos = null;
+    }
+
+    function mousePos(e) {
+      if (e.pageX || e.pageY) return { x: e.pageX, y: e.pageY };
+      return {
+        x: e.clientX + document.body.scrollLeft - document.body.clientLeft,
+        y: e.clientY + document.body.scrollTop - document.body.clientTop
+      };
+    }
+
+    /* ============================================================
+     *  确定 / 关闭
+     * ============================================================ */
+    function handleStartToEndAngle() {
+      if (isChange) return;
+      isChange = true;
+    }
+
+    function handleClose() {
+      if (isChange) return;
+      clear();
+      close();
+    }
+
+    function update() {
+      // 预留：向外抛出 initStartAngle
+      console.log('update', initStartAngle);
+    }
+
+    function close() {
+      console.log('close');
+    }
+
+    function clear() {
+      // 齿轮用 rAF，无需 killTweens；保留重置速度
+      gearSpeedScale = 1;
+    }
+
+    /* ============================================================
+     *  确定动画：遮罩 + 指针渐进
+     * ============================================================ */
+    function animateAngle() {
+      update();
+      gearSpeedScale = toothedGearRotationSpeed;
+      minutesAngle = initStartAngle;
+      minuteHand.style.transform = `rotate(${minutesAngle}deg)`;
+
+      if (isRotationAngle) {
+        if (initStartAngle < endRotation) {
+          initStartAngle += 1;
+          initMaskAngle -= 1;
+          setMaskVar('--start-angle', `${initStartAngle}deg`);
+          setMaskVar('--mask-angle1', `${initMaskAngle}deg`);
+        } else {
+          isRotationAngle = false;
+          initMaskAngle = 360;
+          initStartAngle = rotation;
+          endRotation = 360 + rotation;
+          setMaskVar('--mask-angle1', `0deg`);
+        }
+      } else {
+        if (initStartAngle < endRotation) {
+          initStartAngle += 1;
+          initMaskAngle -= 1;
+          setMaskVar('--start-angle', `${initStartAngle}deg`);
+          setMaskVar('--mask-angle', `${initMaskAngle}deg`);
+        } else {
+          setMaskVar('--mask-angle', `0deg`);
+          setMaskVar('--mask-angle1', `0deg`);
+          gearSpeedScale = 1;
+          setTimeout(() => {
+            isChange = false;
+            handleClose();
+          }, 500);
+        }
+      }
+    }
+
+    function render() {
+      if (isChange) animateAngle();
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+
+    /* ============================================================
+     *  按钮事件
+     * ============================================================ */
+    btnConfirm.addEventListener('click', handleStartToEndAngle);
+    btnClose.addEventListener('click', handleClose);
+
+    /* ============================================================
+     *  初始化遮罩：默认 0deg
+     * ============================================================ */
+    setMaskVar('--mask-angle', `0deg`);
+    setMaskVar('--mask-angle1', `0deg`);
+  </script>
+</body>
+
+</html>

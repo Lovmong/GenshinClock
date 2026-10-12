@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>原神 调整时间星盘</title>
+  <link rel="stylesheet" href="./index.css">
+</head>
+
+<body>
+  <div class="clock-wrap">
+    <!-- 昼夜遮罩 -->
+    <!-- <div class="mask-layer" id="mask" style="--maskDeg: 180deg;"></div> -->
+
+    <img class="ref_clock" src="./assets/MainClock.png" alt="clock-bg">
+
+    <!-- 表盘 -->
+    <img class="clock-bg" src="./assets/Clock_BG.png" alt="clock-bg">
+    <img class="clock-dial" src="./assets/UI_Clock_Dial.png" alt="clock-bg">
+
+    <!-- 表机芯-->
+    <div class="clock-movement">
+      <!-- 星空-->
+      <!-- <img class="star" src="./assets/UI_Img_HoroscopeBg.png" alt="star"> -->
+      <!-- <img class="star_particles" src="./assets/star_particles.gif" alt="star_particles"> -->
+    
+      <!-- 齿轮 -->
+      <!-- <img class="gear3" src="./assets/UI_Img_Horoscope03.png" alt="gear3"> -->
+      <!-- <img class="gear4" src="./assets/UI_Img_Horoscope04.png" alt="gear4"> -->
+      <img class="gear5" src="./assets/UI_Img_Horoscope05.png" alt="gear5">
+      <img class="gear6" src="./assets/UI_Img_Horoscope06.png" alt="gear6">
+      <img class="gear7" src="./assets/UI_Img_Horoscope06.png" alt="gear7">
+      <!-- <img class="gear0" src="./assets/UI_Img_Horoscope06.png" alt="gear0"> -->
+
+    </div>
+
+
+    <!-- 指针 -->
+    <!-- <img id="pointerHour" class="pointer" src="./assets/UI_Clock_HourHand.png" alt="hour"> -->
+    <!-- <img id="pointerMin" class="pointer" src="./assets/UI_Clock_MinuteHand.png" alt="minute"> -->
+  </div>
+
+  <!--
+  <script>
+    const hourHand = document.getElementById('pointerHour');
+    const minHand = document.getElementById('pointerMin');
+    const mask = document.getElementById('mask');
+    const wrap = document.querySelector('.clock-wrap');
+
+    let isDrag = false;
+    let activePointer = null;
+    let currentHourDeg = 0;
+    let currentMinDeg = 0;
+
+    // 角度转提瓦特时间
+    function deg2Time(deg) {
+      let totalMin = deg / 360 * 24 * 60;
+      let h = Math.floor(totalMin / 60) % 24;
+      let m = Math.floor(totalMin % 60);
+      return { h, m };
+    }
+    // 时间转遮罩角度（黑夜区域）
+    function updateMask(deg) {
+      mask.style.setProperty('--maskDeg', `${deg}deg`);
+    }
+    // 设置指针旋转
+    function render() {
+      hourHand.style.transform = `rotate(${currentHourDeg}deg)`;
+      minHand.style.transform = `rotate(${currentMinDeg}deg)`;
+      updateMask(currentMinDeg);
+    }
+
+    // 鼠标坐标 -> 相对于圆心的角度
+    function getAngle(e) {
+      const rect = wrap.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      // atan2返回弧度，转为角度，+90校正0°朝上
+      let ang = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+      if (ang < 0) ang += 360;
+      return ang;
+    }
+
+    // 拖拽事件
+    minHand.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      isDrag = true;
+      activePointer = 'min';
+    });
+    hourHand.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      isDrag = true;
+      activePointer = 'hour';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDrag) return;
+      const ang = getAngle(e);
+      if (activePointer === 'min') {
+        currentMinDeg = ang;
+      } else {
+        currentHourDeg = ang;
+      }
+      render();
+    });
+    document.addEventListener('mouseup', () => { isDrag = false; });
+    document.addEventListener('mouseleave', () => { isDrag = false; });
+
+    // 初始化，提瓦特时间
+    function initTeyvatTime() {
+      const now = Date.now();
+      const teyvatTotalMin = (now / 1000 * 12) % (24 * 60);
+      const totalDeg = teyvatTotalMin / (24 * 60) * 360;
+      currentHourDeg = totalDeg;
+      currentMinDeg = totalDeg;
+      render();
+    }
+    initTeyvatTime();
+    setInterval(() => {
+      if (!isDrag) initTeyvatTime();
+    }, 1000);
+  </script>
+
+  -->
+</body>
+
+</html>

@@ -1,0 +1,332 @@
+/* ============================================================
+ *  基础重置
+ * ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+/* ============================================================
+ *  容器
+ * ============================================================ */
+.clock-container {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 9;
+  background: linear-gradient(-90deg, #000000, 50%, transparent);
+}
+
+.clock-header {
+  text-align: right;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+
+.clock-container_wrapper {
+  position: relative;
+  transform: translate(-50%, -50%);
+  top: 40%;
+  left: 70%;
+  width: 700px;
+  height: 400px;
+  display: flex;
+  justify-items: center;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.clock-con_left {
+  flex: 1;
+}
+
+.clock-con_right {
+  width: 400px;
+  height: 100%;
+  position: relative;
+}
+
+/* ============================================================
+ *  通用表盘单元
+ * ============================================================ */
+.clock_unit {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  text-align: center;
+}
+
+/* ============================================================
+ *  背景图
+ * ============================================================ */
+.clock_bg {
+  background-image: url("assets/Clock_BG.png");
+  background-size: 100%, 100%;
+}
+
+.clock_dial {
+  background: url("assets/UI_Clock_Dial.png") no-repeat center;
+  background-size: 86%;
+}
+
+.star_particles {
+  background: url("assets/star_particles.gif") no-repeat center;
+  background-size: 45%;
+}
+
+.clock_hbg {
+  background: url("assets/UI_Img_HoroscopeBg.png");
+  background-size: 100%, 100%;
+}
+
+/* ============================================================
+ *  遮罩区
+ * ============================================================ */
+.clock_unit_mask {
+  position: relative;
+  transform: translate(-50%, -50%);
+  width: 45%;
+  height: 45%;
+  left: 50%;
+  top: 50%;
+  text-align: center;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.clock_unit_mask_wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+
+/* ============================================================
+ *  时区遮罩
+ * ============================================================ */
+.timeZone_wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.clock_TimeZone {
+  background: url("assets/UI_Clock_TimeZoneColor.png") no-repeat;
+  -webkit-mask-image: url("assets/UI_Clock_TimeZone.png");
+  mask-image: url("assets/UI_Clock_TimeZone.png");
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  background-size: 100%;
+}
+
+.clock_TimeZone::after {
+  position: absolute;
+  content: '';
+  background: conic-gradient(
+    from var(--start-angle),
+    transparent 0deg var(--mask-angle),
+    rgba(0, 0, 0, 0.8) 0deg 360deg
+  );
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.clock_TimeZone_1 {
+  width: 95%;
+  height: 95%;
+  background-size: 100%;
+}
+
+.clock_TimeZone_1::after {
+  background: conic-gradient(
+    from var(--start-angle),
+    transparent 0deg var(--mask-angle1),
+    rgba(0, 0, 0, 0.8) 0deg 360deg
+  );
+}
+
+/* ============================================================
+ *  齿轮
+ * ============================================================ */
+.center {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  width: 25%;
+  height: 25%;
+}
+
+.center-clock {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.center_35 {
+  width: 35%;
+  height: 35%;
+  opacity: 0.6;
+}
+
+.center_50 {
+  width: 50%;
+  height: 50%;
+}
+
+.center_90 {
+  width: 90%;
+  height: 90%;
+}
+
+.clock_horoscope03 {
+  background: url("assets/UI_Img_Horoscope03.png") no-repeat;
+  background-size: 100%;
+  left: 5%;
+  top: -5%;
+  transform-origin: center center;
+}
+
+.clock_horoscope04 {
+  background: url("assets/UI_Img_Horoscope04.png") no-repeat;
+  background-size: 100%;
+  left: -12%;
+  top: 15%;
+  transform-origin: center center;
+}
+
+.clock_horoscope05 {
+  background: url("assets/UI_Img_Horoscope05.png") no-repeat;
+  background-size: 100%;
+  left: 94%;
+  top: 60%;
+  transform-origin: center center;
+}
+
+.clock_horoscope05_1 {
+  background: url("assets/UI_Img_Horoscope05.png") no-repeat;
+  background-size: 100%;
+  left: 140%;
+  top: 95%;
+  transform-origin: center center;
+}
+
+.clock_horoscope06 {
+  background: url("assets/UI_Img_Horoscope06.png") no-repeat;
+  background-size: 100%;
+  transform-origin: center center;
+}
+
+.clock_horoscope06_1 {
+  top: -190%;
+  left: 80%;
+  transform-origin: center center;
+}
+
+/* ============================================================
+ *  昼夜图标
+ * ============================================================ */
+.sun_state {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  width: 16%;
+  height: 98%;
+}
+
+.noon_state {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  width: 85%;
+  height: 16%;
+}
+
+.morning {
+  background: url("assets/UI_ClockIcon_Morning.png") no-repeat;
+  background-size: 100%;
+  left: 14%;
+}
+
+.dusk {
+  background: url("assets/UI_ClockIcon_Dusk.png") no-repeat;
+  background-size: 100%;
+  left: 86%;
+}
+
+.night {
+  background: url("assets/UI_ClockIcon_Night.png") no-repeat;
+  background-size: 100%;
+  top: 87%;
+}
+
+.noon {
+  background: url("assets/UI_ClockIcon_Noon.png") no-repeat;
+  background-size: 100%;
+  top: 15%;
+}
+
+/* ============================================================
+ *  指针
+ * ============================================================ */
+.clock_hourHand {
+  background: url("assets/UI_Clock_HourHand.png");
+  background-size: 100%, 100%;
+  cursor: grab;
+  pointer-events: auto;
+  transform-origin: center center;
+}
+
+.clock_minuteHand {
+  background: url("assets/UI_Clock_MinuteHand.png");
+  background-size: 100%, 100%;
+  transform-origin: center center;
+}
+
+/* ============================================================
+ *  按钮
+ * ============================================================ */
+.clock-btn {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 110%;
+  left: 50%;
+  padding: 8px 50px;
+  color: white;
+  border-radius: 4px;
+  background: #262626;
+  border: 1px solid #3c3c3c;
+  cursor: pointer;
+  user-select: none;
+}
+
+.clock-btn:hover {
+  background: #3c3c3c;
+}
