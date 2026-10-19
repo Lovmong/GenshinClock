@@ -13,7 +13,7 @@
     }
 
     .clock-wrap {
-      width: 590px;
+      width: 240px;
       aspect-ratio: 1 / 1; 
       position: relative;
       overflow: hidden;
@@ -25,22 +25,45 @@
       pointer-events: none;
     }
 
-    .clock-bg {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 94%;
-      aspect-ratio: 1 / 1;
-    }
-
-    .ref_clock {
+      .clock-bg-bg {
       position: absolute;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
       width: 100%;
       aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      overflow: hidden;
+      opacity: 0.2;
+      z-index: -2;
+    }
+
+    .clock-bg {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      aspect-ratio: 1 / 1;
+    }
+
+    /* .ref_clock {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      z-index: -99;
+    } */
+
+    .ref_clock {
+      position: absolute;
+      left: 49.5%;
+      top: 50.5%;
+      transform: translate(-50%, -50%);
+      width: 97%;
+      /* aspect-ratio: 1 / 1; */
       z-index: -99;
     }
 
@@ -49,7 +72,7 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 81%;
+      width: 86%;
       aspect-ratio: 1 / 1;
     }
 
@@ -77,16 +100,18 @@
         user-select: none;
         pointer-events: none;
         /* border: #fff 1px solid; */
+        /* opacity: 0.6; */
     }
 
     .gear3 {
         position: absolute;
-        left: 18%;
-        top: -2%;
-        width: 88%;
+        left: 13%;
+        top: -6%;
+        width: 97%;
         aspect-ratio: 1 / 1;
         animation: rotateGear3 60s linear infinite reverse;
         rotate: 0deg;
+        /* opacity: 0.5; */
     } 
 
     @keyframes rotateGear3 {
@@ -100,13 +125,14 @@
 
     .gear4 {
         position: absolute;
-        left: -6%;
+        left: -8%;
         top: 16%;
-        width: 80%;
+        width: 85%;
         aspect-ratio: 1 / 1;
         /* 48齿 */
         animation: rotateGear4 60s linear infinite reverse;
         rotate: 0deg;
+        /* opacity: 0.6; */
     } 
 
     @keyframes rotateGear4 {
@@ -120,13 +146,14 @@
 
     .gear5 {
         position: absolute;
-        left: 68%;
-        top: 51%;
-        width: 46.5%;
+        left: 71%;
+        top: 50%;
+        width: 54.5%;
         aspect-ratio: 1 / 1;
         /* 32齿 */
         animation: rotateGear5 40s linear infinite ;
         rotate: 3deg;
+        /* opacity: 0.6; */
     } 
 
     @keyframes rotateGear5 {
@@ -141,12 +168,13 @@
     .gear6 {
         position: absolute;
         left: 58%;
-        top: -8%;
-        width: 24%;
+        top: -16%;
+        width: 30%;
         aspect-ratio: 1 / 1;
         /* 32齿 */
         animation: rotateGear6 40s linear infinite reverse;
         rotate: 0deg;
+        opacity: 0.6;
     } 
 
     @keyframes rotateGear6 {
@@ -160,13 +188,14 @@
 
     .gear7 {
         position: absolute;
-        left: 81%;
+        left: 84%;
         top: 62.5%;
-        width: 24%;
+        width: 30%;
         aspect-ratio: 1 / 1;
         /* 32齿 */
         animation: rotateGear7 120s linear infinite reverse;
         rotate: 0deg;
+        opacity: 0.6;
     } 
 
     @keyframes rotateGear7 {
@@ -184,10 +213,11 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 25%;
+        width: 28%;
         aspect-ratio: 1 / 1;
         /* 32齿 */
         animation: rotateGear0 40s linear infinite reverse;
+        /* opacity: 0.6; */
     }
 
     @keyframes rotateGear0 {
@@ -205,13 +235,14 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 82%;
+        width: 86%;
         aspect-ratio: 1 / 1;
     }
 
     #pointerMin {
       z-index: 10;
       animation: rotatepointerMin 60s linear infinite;
+      transform: translate(-50%, -50%) rotate(0deg);
     }
 
     @keyframes rotatepointerMin {
@@ -226,6 +257,7 @@
     #pointerHour {
       z-index: 9;
       animation: rotatepointerHour 3600s linear infinite;
+      transform: translate(-50%, -50%) rotate(0deg);
     }
 
     @keyframes rotatepointerHour {
