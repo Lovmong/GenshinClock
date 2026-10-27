@@ -16,8 +16,21 @@
       width: 240px;
       aspect-ratio: 1 / 1; 
       position: relative;
+      border-radius: 50%;
       overflow: hidden;
-      /* border: #fff 1px solid; */
+      border: #fff 1px solid;
+    }
+
+    .dot {
+      width: 7px;
+      aspect-ratio: 1 / 1; 
+      border-radius: 50%;
+      background: #4285f4;
+      position: absolute;
+      /* 定位到圆心 */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
 
     .clock-wrap img {
@@ -25,7 +38,7 @@
       pointer-events: none;
     }
 
-      .clock-bg-bg {
+    .clock-bg-bg {
       position: absolute;
       left: 50%;
       top: 50%;
@@ -43,7 +56,7 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 100%;
+      width: 113%;
       aspect-ratio: 1 / 1;
     }
 
@@ -60,9 +73,9 @@
     .ref_clock {
       position: absolute;
       left: 49.5%;
-      top: 50.5%;
+      top: 50.6%;
       transform: translate(-50%, -50%);
-      width: 97%;
+      width: 110%;
       /* aspect-ratio: 1 / 1; */
       z-index: -99;
     }
@@ -72,7 +85,7 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 86%;
+      width: 97.5%;
       aspect-ratio: 1 / 1;
     }
 
@@ -82,7 +95,7 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      width: 46%;
+      width: 52%;
       aspect-ratio: 1 / 1;
       border-radius: 50%;
       overflow: hidden;
@@ -174,7 +187,7 @@
         /* 32齿 */
         animation: rotateGear6 40s linear infinite reverse;
         rotate: 0deg;
-        opacity: 0.6;
+        /* opacity: 0.6; */
     } 
 
     @keyframes rotateGear6 {
@@ -195,7 +208,7 @@
         /* 32齿 */
         animation: rotateGear7 120s linear infinite reverse;
         rotate: 0deg;
-        opacity: 0.6;
+        /* opacity: 0.6; */
     } 
 
     @keyframes rotateGear7 {
@@ -230,22 +243,40 @@
     } 
 
     /* 指针核心：旋转原点在底部中心 */
-    .pointer {
-      position: absolute;
+    .pointerSec {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 50%;
+        aspect-ratio: 1 / 1;
+        z-index: 10;
+        animation: rotatePointerSec 60s linear infinite;
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    @keyframes rotatePointerSec {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    } 
+
+    .pointerMin {
+        position: absolute;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
         width: 86%;
         aspect-ratio: 1 / 1;
+        z-index: 10;
+        animation: rotatePointerMin 3600s linear infinite;
+        transform: translate(-50%, -50%) rotate(0deg);
     }
 
-    #pointerMin {
-      z-index: 10;
-      animation: rotatepointerMin 60s linear infinite;
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
-
-    @keyframes rotatepointerMin {
+    @keyframes rotatePointerMin {
       from {
         transform: translate(-50%, -50%) rotate(0deg);
       }
@@ -254,13 +285,19 @@
       }
     } 
 
-    #pointerHour {
-      z-index: 9;
-      animation: rotatepointerHour 3600s linear infinite;
-      transform: translate(-50%, -50%) rotate(0deg);
+    .pointerHour {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 86%;
+        aspect-ratio: 1 / 1;
+        z-index: 10;
+        animation: rotatePointerHour 43200s linear infinite;
+        transform: translate(-50%, -50%) rotate(0deg);
     }
 
-    @keyframes rotatepointerHour {
+    @keyframes rotatePointerHour {
       from {
         transform: translate(-50%, -50%) rotate(0deg);
       }
@@ -268,7 +305,6 @@
         transform: translate(-50%, -50%) rotate(360deg);
       }
     } 
-
 
     /* 昼夜遮罩 */
     /*
