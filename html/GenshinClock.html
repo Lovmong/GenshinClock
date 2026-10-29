@@ -47,90 +47,47 @@
   
   </div>
 
-  <!--
   <script>
     const hourHand = document.getElementById('pointerHour');
     const minHand = document.getElementById('pointerMin');
-    const mask = document.getElementById('mask');
-    const wrap = document.querySelector('.clock-wrap');
+    const secHand = document.getElementById('pointerSec');
 
-    let isDrag = false;
-    let activePointer = null;
-    let currentHourDeg = 0;
-    let currentMinDeg = 0;
+    // 是否 24 小时制走一圈（原神星盘是 24 小时刻度）
+    const USE_24H = false;
 
-    // 角度转提瓦特时间
-    function deg2Time(deg) {
-      let totalMin = deg / 360 * 24 * 60;
-      let h = Math.floor(totalMin / 60) % 24;
-      let m = Math.floor(totalMin % 60);
-      return { h, m };
-    }
-    // 时间转遮罩角度（黑夜区域）
-    function updateMask(deg) {
-      mask.style.setProperty('--maskDeg', `${deg}deg`);
-    }
-    // 设置指针旋转
     function render() {
-      hourHand.style.transform = `rotate(${currentHourDeg}deg)`;
-      minHand.style.transform = `rotate(${currentMinDeg}deg)`;
-      updateMask(currentMinDeg);
+      const now = new Date();
+      // console.log(now);
+
+      // 毫秒级时间，秒针平滑扫动
+      const ms = now.getMilliseconds();
+      const s = now.getSeconds() + ms / 1000;         // 0 ~ 59.999
+      const m = now.getMinutes() + s / 60;            // 0 ~ 59.999
+      const h = (now.getHours() % (USE_24H ? 24 : 12)) + m / 60;
+
+      // console.log(h, m, s);
+
+      
+      const secDeg = s * (360 / 60);                  // 秒针：每秒 6°
+      const minDeg = m * (360 / 60);                  // 分针：每分钟 6°
+      const hourDeg = 180 + h * (360 / (USE_24H ? 24 : 12));// 时针：每小时 30°（24h 制为 15°）
+
+      secHand.style.transform = `translate(-50%, -50%) rotate(${secDeg}deg)`;
+      minHand.style.transform = `translate(-50%, -50%) rotate(${minDeg}deg)`;
+      hourHand.style.transform = `translate(-50%, -50%) rotate(${hourDeg}deg)`;
+
     }
 
-    // 鼠标坐标 -> 相对于圆心的角度
-    function getAngle(e) {
-      const rect = wrap.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      // atan2返回弧度，转为角度，+90校正0°朝上
-      let ang = Math.atan2(dy, dx) * 180 / Math.PI + 90;
-      if (ang < 0) ang += 360;
-      return ang;
-    }
-
-    // 拖拽事件
-    minHand.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      isDrag = true;
-      activePointer = 'min';
-    });
-    hourHand.addEventListener('mousedown', (e) => {
-      e.preventDefault();
-      isDrag = true;
-      activePointer = 'hour';
-    });
-
-    document.addEventListener('mousemove', (e) => {
-      if (!isDrag) return;
-      const ang = getAngle(e);
-      if (activePointer === 'min') {
-        currentMinDeg = ang;
-      } else {
-        currentHourDeg = ang;
-      }
+    // 用 requestAnimationFrame 驱动，指针走动平滑
+    function tick() {
       render();
-    });
-    document.addEventListener('mouseup', () => { isDrag = false; });
-    document.addEventListener('mouseleave', () => { isDrag = false; });
-
-    // 初始化，提瓦特时间
-    function initTeyvatTime() {
-      const now = Date.now();
-      const teyvatTotalMin = (now / 1000 * 12) % (24 * 60);
-      const totalDeg = teyvatTotalMin / (24 * 60) * 360;
-      currentHourDeg = totalDeg;
-      currentMinDeg = totalDeg;
-      render();
+      requestAnimationFrame(tick);
     }
-    initTeyvatTime();
-    setInterval(() => {
-      if (!isDrag) initTeyvatTime();
-    }, 1000);
+
+    render();               // 初始化立刻按系统时间摆好指针
+    requestAnimationFrame(tick);
   </script>
 
-  -->
 </body>
 
 </html>

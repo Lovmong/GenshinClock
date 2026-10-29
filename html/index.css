@@ -251,8 +251,8 @@
         width: 50%;
         aspect-ratio: 1 / 1;
         z-index: 10;
-        animation: rotatePointerSec 60s linear infinite;
-        transform: translate(-50%, -50%) rotate(0deg);
+        /* animation: rotatePointerSec 60s linear infinite; */
+        /* transform: translate(-50%, -50%) rotate(0deg); */
     }
 
     @keyframes rotatePointerSec {
@@ -272,8 +272,8 @@
         width: 86%;
         aspect-ratio: 1 / 1;
         z-index: 10;
-        animation: rotatePointerMin 3600s linear infinite;
-        transform: translate(-50%, -50%) rotate(0deg);
+        /* animation: rotatePointerMin 3600s linear infinite; */
+        /* transform: translate(-50%, -50%) rotate(0deg); */
     }
 
     @keyframes rotatePointerMin {
@@ -293,7 +293,7 @@
         width: 86%;
         aspect-ratio: 1 / 1;
         z-index: 10;
-        animation: rotatePointerHour 43200s linear infinite;
+        /* animation: rotatePointerHour 43200s linear infinite; */
         transform: translate(-50%, -50%) rotate(0deg);
     }
 
